@@ -1,0 +1,25 @@
+{
+  "name": "web-model",
+  "version": "0.1.0",
+  "description": "Model layer in front end's mv* pattern.",
+  "main": "Model.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Naeemo/web-model.git"
+  },
+  "keywords": [
+    "front-end-model"
+  ],
+  "author": "naeemo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Naeemo/web-model/issues"
+  },
+  "homepage": "https://github.com/Naeemo/web-model#readme",
+  "dependencies": {
+    "superagent": "^2.3.0"
+  }
+}
