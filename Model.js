@@ -37,14 +37,26 @@ class Model {
         superagent.Request.prototype.end = function () {
 
             let userHandler = arguments[0];
+            let key, result;
+
+            // run beforeInterceptors
+            for (key in Model.beforeInterceptors) {
+                if (Model.beforeInterceptors.hasOwnProperty(key)) {
+                    result = Model.beforeInterceptors[key]();
+                    // 拦截器显式返回一个false, 则中止请求。
+                    if (typeof result !== 'undefined' && !result) {
+                        return false;
+                    }
+                }
+            }
 
             return oldEnd.call(this, function (err, res) {
                 let key, result;
 
-                // run interceptors;
-                for (key in Model.interceptors) {
-                    if (Model.interceptors.hasOwnProperty(key)) {
-                        result = Model.interceptors[key](err, res);
+                // run afterInterceptors
+                for (key in Model.afterInterceptors) {
+                    if (Model.afterInterceptors.hasOwnProperty(key)) {
+                        result = Model.afterInterceptors[key](err, res);
                         // 拦截器显式返回一个false, 则中止循环。
                         if (typeof result !== 'undefined' && !result) {
                             break;
@@ -68,23 +80,30 @@ class Model {
     /**
      * 配置base_url 和 拦截器
      * @param base_url
-     * @param interceptors
+     * @param beforeInterceptors
+     * @param afterInterceptors
      */
     static use({
-        base_url,       // string
-        interceptors    // function array
+        base_url,           // string
+        beforeInterceptors, // function array, before request
+        afterInterceptors   // function array, filter response
     }) {
 
         if (typeof base_url !== 'string') {
             throw new Error('base url 必须是字符串。')
         }
 
-        if (!/array/ig.test(Object.prototype.toString.call(interceptors))) {
-            throw new Error('拦截器配置interceptors必须是数组。')
+        if (!/array/ig.test(Object.prototype.toString.call(beforeInterceptors))) {
+            throw new Error('前置拦截器 beforeInterceptors 必须是数组。')
+        }
+
+        if (!/array/ig.test(Object.prototype.toString.call(afterInterceptors))) {
+            throw new Error('后置拦截器 afterInterceptors 必须是数组。')
         }
 
         Model.base = base_url;
-        Model.interceptors = interceptors;
+        Model.beforeInterceptors = beforeInterceptors;
+        Model.afterInterceptors = afterInterceptors;
 
     }
 

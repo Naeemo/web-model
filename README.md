@@ -32,19 +32,28 @@ Model构造器: 传入一个数据模型的信息，生成一个model的实例�
         Good.getById(666);  // ajax call 
         ``` 
         
-2. [x] Model constructor: interceptors can be set to Model; 
-Model构造器: 拦截器直接配置在Model构造器上；
+2. [x] Model constructor: interceptors can be set to Model, before or after the request. Before ones can return ```false```to stop the interceptors chain and cancel the request; After ones can return ```false``` to stop the interceptors chain and the user's callback.
+Model构造器: 拦截器直接配置在Model构造器上；支持请求前拦截器、返回内容拦截器；请求前拦截器返回false会停止后续拦截器并取消请求，返回内容拦截器返回false会停止后续拦截器和用户回调。
         
         ```
             Model.use({
                 base_url: 'http://rap.qdum.com/mockjsdata/9/v1',
-                interceptors: [
+                beforeInterceptors: [
                     function() {
-                        console.info('拦截器665');
-                        return false;
+                        console.info('before request 111');
+                        // return false; // if active, cancel further interceptors and the request
                     },
                     function() {
-                        console.info('拦截器444');
+                        console.info('before request 222');
+                    }
+                ],
+                afterInterceptors: [
+                    function() {
+                        console.info('after request 333');
+                        return false; // stop further interceptors and user's handler callback
+                    },
+                    function() {
+                        console.info('after request 444'); // won't be excuted cuz 333 break the chain
                     }
                 ]
             }); 
