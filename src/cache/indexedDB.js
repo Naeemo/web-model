@@ -1,8 +1,9 @@
-
 /**
  * indexedDB的增删改查
  */
-class IndexedDB {
+
+export default class IndexedDB {
+
     constructor(database) {
         this.database = database;
         this.init();
@@ -13,7 +14,7 @@ class IndexedDB {
     
     // 数据库实例
     db = null;
-    
+
     /**
      * 初始化, 打开数据库并获取数据库实例
      */
@@ -22,7 +23,7 @@ class IndexedDB {
             this.db = db;
         });
     }
-    
+
     /**
      * 打开数据库,版本号为时间戳,保证最新版本
      * @param store
@@ -50,7 +51,7 @@ class IndexedDB {
             }
         });
     }
-    
+
     /**
      * 获取key值为key的数据, 成功会返回查到的数据
      * @param store
@@ -69,7 +70,7 @@ class IndexedDB {
             };
         })
     }
-    
+
     /**
      * 添加/修改数据,成功会返回key
      * @param store
@@ -94,7 +95,7 @@ class IndexedDB {
             };
         });
     }
-    
+
     /**
      * 删除数据,成功返回'done'
      * @param store
@@ -113,4 +114,5 @@ class IndexedDB {
             };
         });
     }
+
 }
