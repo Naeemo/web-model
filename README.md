@@ -59,12 +59,12 @@ Model构造器: 拦截器直接配置在Model构造器上；支持请求前拦�
     }); 
 ```
         
-3. [ ] Web Storage: localStorage and sessionStorage support with optional expire time(cookies as fallback?);
-localStorage和sessionStorage支持，带有可选的过期时间设置(使用cookie做兼容?)；
+3. [x] Web Storage: localStorage and sessionStorage support with optional expire time(cookies as fallback? no);
+localStorage和sessionStorage支持，带有可选的过期时间设置(使用cookie做兼容? 算了)；
 
 4. [ ] Web Workers: use workers to execute ajax calls;
 使用web Worker来执行ajax；
 
-5. [ ] Web Database: use of Web SQL or indexedDB;
+5. [x] Web Database: use of Web SQL or indexedDB: only indexedDB, since the web SQL has been deprecated.
 支持Web SQL或者indexedDB；
 
