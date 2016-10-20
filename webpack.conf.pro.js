@@ -30,8 +30,7 @@ module.exports = {
         path: DIST_DIR,
         library: 'model',
         libraryTarget: 'commonjs2',
-        filename: '[name].min.js',
-        chunkFilename: '[name].js'
+        filename: 'model.js'
     },
     devtool: false,
     debug: false,
