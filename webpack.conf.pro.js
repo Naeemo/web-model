@@ -10,12 +10,12 @@ const CleanPlugin = require('clean-webpack-plugin');
 const plugins = [
     new CleanPlugin(DIST_DIR),
 
-    // new webpack.optimize.UglifyJsPlugin({
-    //     mangle:   true,
-    //     compress: {
-    //         warnings: false
-    //     },
-    // }),
+    new webpack.optimize.UglifyJsPlugin({
+        mangle:   true,
+        compress: {
+            warnings: false
+        },
+    }),
 
     new webpack.optimize.DedupePlugin()
 
