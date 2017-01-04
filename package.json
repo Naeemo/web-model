@@ -1,8 +1,8 @@
 {
   "name": "web-model",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Model layer in front end's mv* pattern.",
-  "main": "src/Model.js",
+  "main": "dist/model.js",
   "scripts": {
     "release": "webpack --config=webpack.conf.pro.js",
     "dev": "webpack --config=webpack.conf.dev.js",
