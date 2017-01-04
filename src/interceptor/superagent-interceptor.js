@@ -25,6 +25,9 @@ export default function({
          */
         len = before.length;
         while(len--) {
+    
+            // 未定义的拦截器为 null
+            if(before[len] === null) continue;
 
             interCepResult = before[len]();
 
@@ -48,6 +51,9 @@ export default function({
              */
             len = after.length;
             while(len--) {
+                
+                // 未定义的拦截器为 null
+                if(before[len] === null) continue;
 
                 interCepResult = after[len]();
 
