@@ -37,8 +37,9 @@ export default function({
 
         }
 
-        // ware the base url if necessary
-        if (_request.url[0] === '/') {
+        // wire the base url if necessary:
+        // any string do not begin with 'http(s)://' or '//' will be wired
+        if (!/^((https?:)?\/\/)/.test(_request.url[0])) {
             _request.url = base + _request.url;
         }
 
