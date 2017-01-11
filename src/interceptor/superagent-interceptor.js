@@ -25,11 +25,11 @@ export default function({
          */
         len = before.length;
         while(len--) {
-    
+
             // 未定义的拦截器为 null
             if(before[len] === null) continue;
 
-            interCepResult = before[len]();
+            interCepResult = before[len].call(_request);
 
             if (typeof interCepResult !== 'undefined' && !interCepResult) {
                 return false;
@@ -51,11 +51,11 @@ export default function({
              */
             len = after.length;
             while(len--) {
-                
+
                 // 未定义的拦截器为 null
                 if(before[len] === null) continue;
 
-                interCepResult = after[len]();
+                interCepResult = after[len].call(_request, err, res);
 
                 // 拦截器显式返回一个false, 则中止请求。
                 if (typeof interCepResult !== 'undefined' && !interCepResult) {
