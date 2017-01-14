@@ -32,7 +32,7 @@ export default function({
             while(len--) {
 
                 // 未定义的拦截器为 null
-                if(before[len] === null) continue;
+                if(after[len] === null) continue;
 
                 result = after[len].call(_request, err, res);
 
