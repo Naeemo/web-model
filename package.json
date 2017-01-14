@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/Naeemo/web-model#readme",
   "dependencies": {
-    "superagent": "^3.3.1"
+    "superagent": "^3.3.2"
   },
   "devDependencies": {
     "babel": "^6.5.2",
