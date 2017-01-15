@@ -29,6 +29,16 @@ export default function(superAgent) {
 
     /**
      * request.cache
+     *
+     * this._expire is a object looks like:
+     * {session, stamp, key}
+     *
+     * what is finally been saved to web storage:
+     * cache: {
+     *      expire: Date.now() + _request._expire.stamp,
+     *      data: res
+     * };
+     *
      * @param time number expire time in minutes
      * @param isSession
      */
@@ -43,8 +53,32 @@ export default function(superAgent) {
             throw new Error('Not a validate expire time for cache');
         }
 
-        if(!this._expire && time) {
-            this._expire = {session: isSession, stamp: time};
+        this._expire = Object.assign({session: isSession, stamp: time}, this._expire || {});
+
+        return this;
+
+    };
+
+
+    /**
+     * request.clearCache
+     */
+    superAgent.Request.prototype.clearCache = function() {
+
+        if(this.method && this.method != 'GET') {
+            throw new Error('only get requests can use .clearCache')
+        }
+
+        // update stamp
+        this._expire = Object.assign(this._expire || {}, {stamp: 0});
+
+        // remove cache if key exists
+        if(this._expire.key) {
+
+            this._expire.session
+                ? SessionStorage.remove(this._expire.key)
+                : LocalStorage.remove(this._expire.key);
+
         }
 
         return this;
