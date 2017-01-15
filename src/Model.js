@@ -12,6 +12,10 @@ let superAgent = cache(originSuperAgent);
 
 export default class Model {
 
+    static base = '';
+    static beforeEach = null;
+    static afterEach = null;
+
     constructor({
         base = '',          // string
         beforeEach = null,  // function, before request
