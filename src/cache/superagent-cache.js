@@ -106,7 +106,6 @@ export default function(superAgent) {
 
             // cache step 3.2: check expire
             if (cache && cache.expire > now) {
-                console.info('cache used');
                 _cb(null, cache.data);
             }else {
                 _request._expire.session
