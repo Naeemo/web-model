@@ -107,7 +107,7 @@ export default function(superAgent) {
             // cache step 3.2: check expire
             if (cache && cache.expire > now) {
                 console.info('cache used');
-                _cb(null, cache.data);  // todo should be caching more than the body
+                _cb(null, cache.data);
             }else {
                 _request._expire.session
                     ? SessionStorage.remove(_request._expire.key)
