@@ -9,8 +9,7 @@ export default function({
     after = []
 }) {
 
-    let len,
-        result,
+    let result,
         originEnd = superAgent.Request.prototype.end;
 
     function callRequest(_request, userHandler) {
@@ -28,11 +27,11 @@ export default function({
              * 后置过滤器
              * 拦截器显式返回一个false, 则中止循环。
              */
-            len = after.length;
+            let len = after.length;
             while(len--) {
 
                 // 未定义的拦截器为 null
-                if(after[len] === null) continue;
+                if(!after[len]) continue;
 
                 result = after[len].call(_request, err, res);
 
@@ -51,6 +50,7 @@ export default function({
     superAgent.Request.prototype.end = function() {
 
         let _request = this,
+            len = before.length,
             userHandler = arguments[0];
 
         /**
@@ -61,7 +61,6 @@ export default function({
          * 3. interceptor doesn't return any none-undefined value,
          * wait for next() call: next(true) continue, next(false) break;
          */
-        len = before.length;
         function next(signal = true) { // notice: undefined signal means ok
 
             // 3. interceptor doesn't return any none-undefined value, wait for next() call;
@@ -69,7 +68,7 @@ export default function({
 
                 if(signal) {
                     // undefined interceptor default value: null
-                    if (before[len] === null) return next();
+                    if (!before[len]) return next();
 
                     result = before[len].call(_request, next);
 
