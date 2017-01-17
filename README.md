@@ -19,7 +19,7 @@ used. Now it rely on [superagent](https://github.com/visionmedia/superagent) as 
     ```
 
 
-2. Model's static method use takes a config object, like this:
+2. Model.use() takes a config object, like this:
         
     ```
         Model.use({
@@ -31,13 +31,8 @@ used. Now it rely on [superagent](https://github.com/visionmedia/superagent) as 
             beforeEach(next) {
                 /**
                  *  1. this bind to current request object
-                 *  2. check fails, break the request:
-                 *      visually return falsy value
-                 *      next(falsy)
-                 *  3. check pass, continue the request:
-                 *      visually return truthy value
-                 *      next()
-                 *      next(truthy)
+                 *  2. call next(falsy), break the request:
+                 *  3. call next() or next(truthy), continue the request:
                  */
             },
             
@@ -71,6 +66,12 @@ used. Now it rely on [superagent](https://github.com/visionmedia/superagent) as 
             },
             
             api: {
+            
+                getMetaInfo() {
+                    return this.request
+                        .get('/meta-info')
+                        .escape()   // escape all interceptors manually.
+                }
             
                 getById(id) {
                     return this.request

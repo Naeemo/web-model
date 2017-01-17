@@ -2,100 +2,97 @@
  * Created by naeemo on 2016/12/8.
  */
 
-export default function({
+export default function ({
     superAgent,
     base = '',
     before = [],
     after = []
 }) {
 
-    let result,
-        originEnd = superAgent.Request.prototype.end;
+    let originEnd = superAgent.Request.prototype.end;
 
-    function callRequest(_request, userHandler) {
-
-        // wire the base url if necessary:
-        // any string do not begin with 'http(s)://' or '//' will be wired
-        if (!/^((https?:)?\/\/)/.test(_request.url[0])) {
-            _request.url = base + _request.url;
-        }
-
-        originEnd.call(_request, function (err, res) {
-
-            /**
-             * run afterInterceptors
-             * 后置过滤器
-             * 拦截器显式返回一个false, 则中止循环。
-             */
-            let len = after.length;
-            while(len--) {
-
-                // 未定义的拦截器为 null
-                if(!after[len]) continue;
-
-                result = after[len].call(_request, err, res);
-
-                // 拦截器显式返回一个false, 则中止请求。
-                if (typeof result !== 'undefined' && !result) {
-                    return false;
-                }
-
-            }
-
-            userHandler(err, res);
-
-        });
-    }
-
-    superAgent.Request.prototype.end = function() {
+    superAgent.Request.prototype.end = function () {
 
         let _request = this,
-            len = before.length,
-            userHandler = arguments[0];
+            userHandler = arguments[0],
+            beforeEscape = this._escape,
+            afterEscape = this._escape,
+            len,
+            result;
+
+        function callRequest() {
+
+            // wire the base url if necessary:
+            // any string do not begin with 'http(s)://' or '//' will be wired
+            if (!/^((https?:)?\/\/)/.test(_request.url)) {
+                _request.url = base + _request.url;
+            }
+
+            originEnd.call(_request, function (err, res) {
+
+                /**
+                 * run afterInterceptors
+                 * 后置过滤器
+                 * 拦截器显式返回一个false, 则中止循环。
+                 */
+                len = after.length;
+                while (!afterEscape && len--) {
+
+                    // skip invalid ones
+                    if (!after[len]) continue;
+
+                    result = after[len].call(_request, err, res);
+
+                    // 拦截器显式返回一个false, 则中止请求。
+                    if (typeof result !== 'undefined' && !result) {
+                        return false;
+                    }
+
+                }
+
+                userHandler(err, res);
+
+            });
+
+        }
+
 
         /**
          * run beforeInterceptors
          * 前置拦截器
-         * 1. interceptor return falsy value, break the request;
-         * 2. interceptor return truthy value, continue;
-         * 3. interceptor doesn't return any none-undefined value,
          * wait for next() call: next(true) continue, next(false) break;
          */
+        len = before.length;
         function next(signal = true) { // notice: undefined signal means ok
 
-            // 3. interceptor doesn't return any none-undefined value, wait for next() call;
-            if(len--) {
+            if (beforeEscape) {
+                callRequest();
+            } else {
+                if (signal) {
 
-                if(signal) {
-                    // undefined interceptor default value: null
-                    if (!before[len]) return next();
-
-                    result = before[len].call(_request, next);
-
-                    if (typeof result !== 'undefined'){
-                        if(result) {
-                            // 2. interceptor return truthy value, continue;
-                            return next();
-                        }else {
-                            // 1. interceptor return falsy value, break the request;
-                            return false;
-                        }
+                    if (len--) {
+                        if (!before[len]) return next();
+                        before[len].call(_request, next);
+                    } else {
+                        callRequest();
                     }
-                }else {
-                    return false;
-                }
 
-            }else {
-                if(signal) {
-                    callRequest(_request, userHandler);
-                }else {
-                    return false;
                 }
             }
 
         }
 
         next();
+    };
+
+
+    /**
+     * Manually escape interceptors
+     * @returns {superAgent}
+     */
+    superAgent.Request.prototype.escape = function () {
+        this._escape = true;
+        return this;
     };
 
     return superAgent;
