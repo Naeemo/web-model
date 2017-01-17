@@ -13,13 +13,13 @@ let superAgent = cache(originSuperAgent);
 export default class Model {
 
     static base = '';
-    static beforeEach = null;
-    static afterEach = null;
+    static beforeEach;
+    static afterEach;
 
     constructor({
         base = '',          // string
-        beforeEach = null,  // function, before request
-        afterEach = null,   // function, filter response
+        beforeEach,  // function, before request
+        afterEach,   // function, filter response
         api = {}            // object, all requests of a model
     }) {
 
@@ -60,8 +60,8 @@ export default class Model {
      */
     static use({
         base = '',          // string
-        beforeEach = null,  // function, before request
-        afterEach = null    // function, filter response
+        beforeEach,         // function, before request
+        afterEach           // function, filter response
     }) {
 
         if(typeof base !== 'string') {
