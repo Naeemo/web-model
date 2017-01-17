@@ -53,32 +53,8 @@ export default function(superAgent) {
             throw new Error('Not a validate expire time for cache');
         }
 
-        this._expire = Object.assign({session: isSession, stamp: time}, this._expire || {});
-
-        return this;
-
-    };
-
-
-    /**
-     * request.clearCache
-     */
-    superAgent.Request.prototype.clearCache = function() {
-
-        if(this.method && this.method != 'GET') {
-            throw new Error('only get requests can use .clearCache')
-        }
-
-        // update stamp
-        this._expire = Object.assign(this._expire || {}, {stamp: 0});
-
-        // remove cache if key exists
-        if(this._expire.key) {
-
-            this._expire.session
-                ? SessionStorage.remove(this._expire.key)
-                : LocalStorage.remove(this._expire.key);
-
+        if(!this._expire && time) {
+            this._expire = {session: isSession, stamp: time};
         }
 
         return this;
