@@ -137,7 +137,7 @@ export default class Model {
             model[key] = function (...args) {
                 return new Promise(function (resolve, reject) {
                     
-                    let _request = api[key].call(model, args);
+                    let _request = api[key].apply(model, args);
                     
                     model._beforeHook(_request).then(() => {
                         
