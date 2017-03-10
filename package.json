@@ -7,7 +7,7 @@
   "scripts": {
     "release": "webpack --config=webpack.conf.pro.js",
     "dev": "webpack --config=webpack.conf.dev.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "karma start --watch"
   },
   "repository": {
     "type": "git",
@@ -37,6 +37,12 @@
     "clean-webpack-plugin": "^0.1.15",
     "eslint": "^3.16.1",
     "eslint-loader": "^1.6.3",
+    "jasmine-core": "^2.5.2",
+    "karma": "^1.5.0",
+    "karma-chrome-launcher": "^2.0.0",
+    "karma-jasmine": "^1.1.0",
+    "karma-sourcemap-loader": "^0.3.7",
+    "karma-webpack": "^2.0.2",
     "webpack": "^1.13.2"
   }
 }
