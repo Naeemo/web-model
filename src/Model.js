@@ -27,23 +27,27 @@ superAgent.Request.prototype.escape = function () {
 function beforeHook(_request, beforeArr) {
     return new Promise(function (resolve, reject) {
         
-        if (_request._escape) resolve();
-        
-        let len = beforeArr.length;
-        
-        function next(ok = true, msg) {
+        if (_request._escape)
+            resolve();
+        else {
             
-            !ok && reject(msg);
+            let len = beforeArr.length;
             
-            if (len--) {
-                if (!beforeArr[len]) return next();
-                beforeArr[len].call(_request, next);
-            } else {
-                resolve()
+            function next(ok = true, msg) {
+                
+                !ok && reject(msg);
+                
+                if (len--) {
+                    if (!beforeArr[len]) return next();
+                    beforeArr[len].call(_request, next);
+                } else {
+                    resolve()
+                }
             }
+            
+            next();
+            
         }
-        
-        next()
         
     })
 }
