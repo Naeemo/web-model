@@ -23,26 +23,26 @@
   },
   "homepage": "https://github.com/Naeemo/web-model#readme",
   "dependencies": {
-    "superagent": "^3.5.0"
+    "superagent": "^3.5.2"
   },
   "devDependencies": {
     "babel": "^6.23.0",
-    "babel-core": "^6.23.1",
-    "babel-eslint": "^7.0.0",
-    "babel-loader": "^6.3.2",
+    "babel-core": "^6.24.0",
+    "babel-eslint": "^7.2.1",
+    "babel-loader": "^6.4.1",
     "babel-plugin-transform-async-to-generator": "^6.22.0",
     "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-preset-es2015": "^6.22.0",
+    "babel-preset-es2015": "^6.24.0",
     "babel-preset-stage-2": "^6.22.0",
-    "clean-webpack-plugin": "^0.1.15",
-    "eslint": "^3.16.1",
-    "eslint-loader": "^1.6.3",
+    "clean-webpack-plugin": "^0.1.16",
+    "eslint": "^3.18.0",
+    "eslint-loader": "^1.7.0",
     "jasmine-core": "^2.5.2",
     "karma": "^1.5.0",
     "karma-chrome-launcher": "^2.0.0",
     "karma-jasmine": "^1.1.0",
     "karma-sourcemap-loader": "^0.3.7",
-    "karma-webpack": "^2.0.2",
+    "karma-webpack": "^2.0.3",
     "webpack": "^1.13.2"
   }
 }
