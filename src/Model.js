@@ -11,7 +11,7 @@ let superAgent = cache(originSuperAgent);
 
 /**
  * Manually escape interceptors
- * @returns {superAgent}
+ * @returns {superAgent.Request}
  */
 superAgent.Request.prototype.escape = function () {
     this._escape = true;
@@ -61,14 +61,14 @@ function beforeHook(_request, beforeArr) {
 function afterHook(resolve, reject, afterArr) {
     return function (err, res) {
         
-        let _request = this;
-        
+        const _request = this;
+        const notEscape = !_request._escape;
         let len = afterArr.length;
-        let afterEscape = _request._escape;
-        while (!afterEscape && len--) {
+        
+        while (notEscape && len--) {
             
             // skip invalid ones
-            if (!afterArr[len]) continue;
+            if (typeof afterArr[len] !== 'function') continue;
             
             let result = afterArr[len].call(_request, err, res);
             
@@ -109,7 +109,7 @@ export default class Model {
         api = {}     // object, all requests of a model
     }) {
         
-        let model = this;
+        const model = this;
         
         
         /**
@@ -139,7 +139,7 @@ export default class Model {
             model[key] = function (...args) {
                 return new Promise(function (resolve, reject) {
                     
-                    let _request = api[key].apply(model, args);
+                    const _request = api[key].apply(model, args);
                     
                     beforeHook(_request, model._beforeArr).then(() => {
                         
