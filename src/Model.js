@@ -62,10 +62,9 @@ function afterHook(resolve, reject, afterArr) {
     return function (err, res) {
         
         const _request = this;
-        const notEscape = !_request._escape;
         let len = afterArr.length;
         
-        while (notEscape && len--) {
+        while (len--) {
             
             // skip invalid ones
             if (typeof afterArr[len] !== 'function') continue;
