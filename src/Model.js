@@ -76,13 +76,12 @@ function afterHook(resolve, reject, afterArr) {
             if (typeof result !== 'undefined' && !result) {
                 reject('Failing after requesting ' + _request.url);
                 // stop the hook calling too
-                break;
+                return;
             }
             
-            if (len === 0) err ? reject(err) : resolve(res);
-            
         }
-        
+    
+        err ? reject(err) : resolve(res);
     }
 }
 
