@@ -70,16 +70,18 @@ function afterHook(resolve, reject, afterArr) {
             // skip invalid ones
             if (typeof afterArr[len] !== 'function') continue;
             
-            let result = afterArr[len].call(_request, err, res);
+            const result = afterArr[len].call(_request, err, res);
             
             // 拦截器显式返回一个false, 则中止请求。
             if (typeof result !== 'undefined' && !result) {
-                reject('after hook')
+                reject('Failing after requesting ' + _request.url);
+                // stop the hook calling too
+                break;
             }
             
+            if (len === 0) err ? reject(err) : resolve(res);
+            
         }
-        
-        resolve(res);
         
     }
 }
@@ -153,6 +155,8 @@ export default class Model {
                         _request.end(afterHook(resolve, reject, model._afterArr).bind(_request))
                         
                     }).catch(e => {
+                        console.error(e, ', before requesting' + _request.url);
+                        reject(e)
                     });
                     
                 })
