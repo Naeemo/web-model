@@ -24,7 +24,7 @@ superAgent.Request.prototype.escape = function () {
  * 前置拦截器
  * wait for next() call: next(true) continue, next(false) break;
  */
-function beforeHook(_request, beforeArr) {
+function beforeHook(_request, ...beforeArr) {
     return new Promise(function (resolve, reject) {
         
         if (_request._escape)
@@ -58,7 +58,7 @@ function beforeHook(_request, beforeArr) {
  * 后置过滤器
  * 拦截器显式返回一个false, 则中止循环。
  */
-function afterHook(resolve, reject, afterArr) {
+function afterHook(resolve, reject, ...afterArr) {
     return function (err, res) {
         
         const _request = this;
@@ -89,10 +89,6 @@ function afterHook(resolve, reject, afterArr) {
  * model:
  * _base
  * request as tool
- *
- * _beforeArr
- * _afterArr
- *
  * apis
  *
  */
@@ -128,11 +124,6 @@ export default class Model {
         model.request = superAgent;
         
         
-        // instance's interceptors
-        model._beforeArr = [beforeEach, Model.beforeEach];
-        model._afterArr = [Model.afterEach, afterEach];
-        
-        
         // attach the APIs
         for (let key in api) {
             // api[key];
@@ -141,7 +132,7 @@ export default class Model {
                     
                     const _request = api[key].apply(model, args);
                     
-                    beforeHook(_request, model._beforeArr).then(() => {
+                    beforeHook(_request, beforeEach, Model.beforeEach).then(() => {
                         
                         // wire the base url if necessary:
                         // any string do not begin with 'http(s)://' or '//' will be wired
@@ -150,7 +141,7 @@ export default class Model {
                         }
                         
                         // make request
-                        _request.end(afterHook(resolve, reject, model._afterArr).bind(_request))
+                        _request.end(afterHook(resolve, reject, Model.afterEach, afterEach).bind(_request))
                         
                     }).catch(e => {
                         console.error(e, ', before requesting' + _request.url);
