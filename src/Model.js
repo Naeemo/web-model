@@ -73,7 +73,7 @@ function afterHook(resolve, reject, ...afterArr) {
             
             // 拦截器显式返回一个false, 则中止请求。
             if (typeof result !== 'undefined' && !result) {
-                reject('Failing after requesting ' + _request.url);
+                reject(err || res);
                 // stop the hook calling too
                 return;
             }
