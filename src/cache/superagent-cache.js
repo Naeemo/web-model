@@ -12,21 +12,20 @@ import {SessionStorage, LocalStorage} from './web-storage'
  * @private
  */
 function _formKey(url, query) {
-
-    url = url.replace(/^\/|\/$/, '');
-
-    let queryStr = query.reduce((qStr, pair) => {
-        pair = pair.replace(/=|\//, '.');
+    
+    const _url = url.replace(/^\/|\/$/, '');
+    const queryStr = query.reduce((qStr, pair) => {
+        pair = pair.replace(/[=/]/, '.');
         return qStr ? qStr + '_' + pair : pair;
     }, '');
-
-    return url + '__by__' + queryStr;
-
+    
+    return _url + '__by__' + queryStr;
+    
 }
 
 
-export default function(superAgent) {
-
+export default function (superAgent) {
+    
     /**
      * request.cache
      *
@@ -39,98 +38,101 @@ export default function(superAgent) {
      *      data: res
      * };
      *
-     * @param time number expire time in minutes
-     * @param isSession
+     * @param {Number} minutesFromNow expire timestamp in minutes
+     * @param {Boolean} isSession
      */
-    superAgent.Request.prototype.cache = function(time, isSession) {
-
-        if(this.method && this.method != 'GET') {
-            throw new Error('only get requests can use .cache')
+    superAgent.Request.prototype.cache = function (minutesFromNow, isSession) {
+        
+        if (!this.method) {
+            throw new Error('Please use .cache() after .get()');
         }
-
-        time = parseInt(time) * 60 * 1000;
-        if(!time) {
-            throw new Error('Not a validate expire time for cache');
+        
+        if (this.method !== 'GET') {
+            throw new Error('Only get requests can be cached, it seems you are using: ' + this.method);
         }
-
-        if(!this._expire && time) {
-            this._expire = {session: isSession, stamp: time};
+        
+        const secondsFromNow = parseInt(minutesFromNow) * 60 * 1000;
+        if (!secondsFromNow) { // NaN or 0
+            throw new Error('Not a validate expire time for cache: ' + secondsFromNow);
         }
-
+        
+        if (!this._expire) {
+            this._expire = {session: isSession, stamp: secondsFromNow};
+        }
+        
         return this;
-
+        
     };
-
-
+    
+    
     /**
      * request.end
      */
-    let oldEnd = superAgent.Request.prototype.end;
-    superAgent.Request.prototype.end = function() {
-
-        let _request = this;
-        let userHandler = arguments[0];
-        let cacheUsed = this._expire && this.method == 'GET';
-        let cache = null, now = Date.now();
-
-
-        function _cb(err, res) {
-
+    const oldEnd = superAgent.Request.prototype.end;
+    superAgent.Request.prototype.end = function (userHandler) {
+        
+        const request = this,
+            CACHE_USED = this._expire && this.method === 'GET',
+            NOW = (new Date).getTime();
+        
+        
+        function cb(err, res) {
+            
             /**
              * cache step 2: set
              */
-            if(cacheUsed && /null/i.test(Object.prototype.toString.call(err))) {
-
+            if (CACHE_USED && /null/i.test(Object.prototype.toString.call(err))) {
+                
                 // 1. form cache
                 let cache = {
-                    expire: Date.now() + _request._expire.stamp,
+                    expire: NOW + request._expire.stamp,
                     data: res
                 };
-
+                
                 // 2. set cache, the key has been formed in get process
-                if(_request._expire.session) {
-                    SessionStorage.set(_request._expire.key, cache);
-                }else {
-                    LocalStorage.set(_request._expire.key, cache);
+                if (request._expire.session) {
+                    SessionStorage.set(request._expire.key, cache);
+                } else {
+                    LocalStorage.set(request._expire.key, cache);
                 }
-
+                
             }
-
+            
             // user's callback
             userHandler(err, res);
-
+            
         }
-
+        
         /**
          * cache
          */
-        if(cacheUsed) {
-
+        if (CACHE_USED) {
+            
             // cache step 1: form the KEY for caching.
-            _request._expire.key = _formKey(_request.url, _request._query);
-
+            request._expire.key = _formKey(request.url, request._query);
+            
             // cache step 3.1: get
-            cache = _request._expire.session
-                ? SessionStorage.get(_request._expire.key)
-                : LocalStorage.get(_request._expire.key);
-
+            let cache = request._expire.session
+                ? SessionStorage.get(request._expire.key)
+                : LocalStorage.get(request._expire.key);
+            
             // cache step 3.2: check expire
-            if (cache && cache.expire > now) {
-                _cb(null, cache.data);
-            }else {
-                _request._expire.session
-                    ? SessionStorage.remove(_request._expire.key)
-                    : LocalStorage.remove(_request._expire.key);
-
-                oldEnd.call(_request, _cb);
+            if (cache && cache.expire > NOW) {
+                cb(null, cache.data);
+            } else {
+                request._expire.session
+                    ? SessionStorage.remove(request._expire.key)
+                    : LocalStorage.remove(request._expire.key);
+                
+                oldEnd.call(request, cb);
             }
-
-        }else {
-            oldEnd.call(_request, _cb);
+            
+        } else {
+            oldEnd.call(request, cb);
         }
-
+        
     };
-
+    
     return superAgent;
-
+    
 }
