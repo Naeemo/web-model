@@ -131,15 +131,15 @@ export default class Model {
                 return new Promise(function (resolve, reject) {
                     
                     const _request = api[key].apply(model, args);
-                    
+    
+                    // wire the base url if necessary:
+                    // any string do not begin with 'http(s)://' or '//' will be wired
+                    if (!/^((https?:)?\/\/)/.test(_request.url)) {
+                        _request.url = model._base + _request.url;
+                    }
+    
                     beforeHook(_request, beforeEach, Model.beforeEach).then(() => {
-                        
-                        // wire the base url if necessary:
-                        // any string do not begin with 'http(s)://' or '//' will be wired
-                        if (!/^((https?:)?\/\/)/.test(_request.url)) {
-                            _request.url = model._base + _request.url;
-                        }
-                        
+                     
                         // make request
                         _request.end(afterHook(resolve, reject, Model.afterEach, afterEach).bind(_request))
                         
