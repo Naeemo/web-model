@@ -19,8 +19,8 @@ module.exports = {
         chunkFilename: '[name].js'
     },
     devtool: '#module-source-map',
-    debug: true,
     cache: true,
+    
     plugins: [
 
         new webpack.optimize.OccurrenceOrderPlugin(true/*preferEntry*/),
@@ -37,33 +37,15 @@ module.exports = {
 
     ],
     module: {
-        loaders: [
+        rules: [
             // js loader
             {
                 test: /\.js$/,
-                loader: 'babel',
+                loader: 'babel-loader',
                 include: [
                     path.join(process.cwd() + '/src'),
                 ]
             }
         ]
-    },
-    babel: {
-        cacheDirectory: true,
-        presets: [
-            'es2015',
-            'stage-2'
-        ],
-        plugins: [
-            [
-                'transform-runtime',
-                {
-                    polyfill: true,
-                    regenerator: true
-                }
-            ],
-            'transform-async-to-generator'
-        ]
     }
-
 };
