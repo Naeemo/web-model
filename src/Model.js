@@ -144,7 +144,7 @@ export default class Model {
                         _request.end(afterHook(resolve, reject, Model.afterEach, afterEach).bind(_request))
                         
                     }).catch(e => {
-                        console.error(e, ', before requesting' + _request.url);
+                        console.error(e, ', before requesting ' + _request.url);
                         reject(e)
                     });
                     
