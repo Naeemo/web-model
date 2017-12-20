@@ -89,7 +89,7 @@ function afterHook(resolve, reject, ...afterArr) {
  * model:
  * _base
  * request as tool
- * apis
+ * api
  *
  */
 export default class Model {
