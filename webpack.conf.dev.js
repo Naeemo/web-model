@@ -15,8 +15,7 @@ module.exports = {
         path: path.join(process.cwd() + '/dist'),
         library: 'model',
         libraryTarget: 'commonjs2',
-        filename: '[name].min.js',
-        chunkFilename: '[name].js'
+        filename: 'model.js'
     },
     devtool: '#module-source-map',
     cache: true,

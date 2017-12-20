@@ -1,6 +1,5 @@
 /**
  * Model constructor
- * 业务Model需继承此类
  * @author naeemo
  */
 
@@ -17,6 +16,32 @@ superAgent.Request.prototype.escape = function () {
     this._escape = true;
     return this;
 };
+
+
+/**
+ * Mark a request as singleton
+ * this means only one request can be in process at the same time, previous request will be aborted.
+ * @return {superAgent.Request}
+ */
+superAgent.Request.prototype.singleton = function () {
+    this._singleton = true;
+    return this;
+};
+
+
+/**
+ * Wrap Promise's resolve/reject, when a singleton request is done, the corresponding record can be cleared.
+ * @param model
+ * @param key
+ * @param promiseHandler
+ * @return {Function}
+ */
+function attachSingletonHook(model, key, promiseHandler) {
+    return function (valueOrErr) { // only one argument will be handled according to Promise spec
+        model._singletonRequests[key] = null;
+        promiseHandler(valueOrErr);
+    }
+}
 
 
 /**
@@ -109,6 +134,15 @@ export default class Model {
         
         
         /**
+         * a map to remember ongoing singleton requests
+         * 正在请求中的单例请求的记录
+         * @type {Object<String, superAgent.Request>}
+         * @private
+         */
+        model._singletonRequests = {};
+        
+        
+        /**
          * api server's base url
          * api 服务的url前缀，默认使用Model上的
          */
@@ -132,6 +166,15 @@ export default class Model {
                     
                     const _request = api[key].apply(model, args);
     
+                    // abort previous call to api[key]
+                    if (_request._singleton && model._singletonRequests[key]) {
+                        // The abort call will only abort the request, not the Promise wrapping it.
+                        // Promises cannot be aborted, so it would be left as 'pending'.
+                        // This is a memory leak, and I did not know what to do...
+                        model._singletonRequests[key].abort();
+                        model._singletonRequests[key] = null;
+                    }
+                    
                     // wire the base url if necessary:
                     // any string do not begin with 'http(s)://' or '//' will be wired
                     if (!/^((https?:)?\/\/)/.test(_request.url)) {
@@ -140,6 +183,13 @@ export default class Model {
     
                     beforeHook(_request, beforeEach, Model.beforeEach).then(() => {
                      
+                        // remember singleton request
+                        if (_request._singleton) {
+                            model._singletonRequests[key] = _request;
+                            resolve = attachSingletonHook(model, key, resolve);
+                            reject = attachSingletonHook(model, key, reject);
+                        }
+                        
                         // make request
                         _request.end(afterHook(resolve, reject, Model.afterEach, afterEach).bind(_request))
                         

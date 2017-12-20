@@ -19,7 +19,7 @@ used. Now it rely on [superagent](https://github.com/visionmedia/superagent) as 
     ```
 
 
-2. Model.use() takes a config object, like this:
+2. Model.use() takes a config object:
         
     ```
         Model.use({
@@ -49,7 +49,7 @@ used. Now it rely on [superagent](https://github.com/visionmedia/superagent) as 
 
 3. Model constructor: take the description of a restful resource, generate a instance with request methods attached.
         
-    ```
+    ``` ecmascript 6
         let good = new Model({
         
             // will override Model.base
@@ -81,9 +81,17 @@ used. Now it rely on [superagent](https://github.com/visionmedia/superagent) as 
                 },
                 
                 remove(id) {
+                    // won't be prefixed by base
                     return this.request
-                        .del('http://another-cool-app.com/api/2/' + id) // won't be prefixed
-                }
+                        .del('http://another-cool-app.com/api/2/' + id) 
+                },
+                
+                complicatedQuery(query) {
+                    return this.request
+                        .get('/query')
+                        .singleton()    // only one request can be in process at the same time
+                        .query(query)
+                },
                 
             }
         });
