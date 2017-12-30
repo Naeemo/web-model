@@ -6,14 +6,24 @@
 import originSuperAgent from 'superagent/lib/client'
 import cache from './cache/superagent-cache'
 
+// which direction to escape
+const ESCAPE_DIRECTIONS = {
+    before: 1,
+    after: 2,
+    both: 3
+};
+
 let superAgent = cache(originSuperAgent);
 
 /**
  * Manually escape interceptors
  * @returns {superAgent.Request}
  */
-superAgent.Request.prototype.escape = function () {
-    this._escape = true;
+superAgent.Request.prototype.escape = function (direction = 'both') {
+    if (!(direction in ESCAPE_DIRECTIONS)) {
+        throw new Error('request.escape() called with a unrecognized value: ' + direction + '.\n \'before\', \'after\', \'both\' are supported.');
+    }
+    this._escape = ESCAPE_DIRECTIONS[direction];
     return this;
 };
 
@@ -52,7 +62,7 @@ function attachSingletonHook(model, key, promiseHandler) {
 function beforeHook(_request, ...beforeArr) {
     return new Promise(function (resolve, reject) {
         
-        if (_request._escape)
+        if (_request._escape === ESCAPE_DIRECTIONS.before || _request._escape === ESCAPE_DIRECTIONS.both)
             resolve();
         else {
             
@@ -87,24 +97,26 @@ function afterHook(resolve, reject, ...afterArr) {
     return function (err, res) {
         
         const _request = this;
-        let len = afterArr.length;
         
-        while (len--) {
+        if (_request._escape !== ESCAPE_DIRECTIONS.after && _request._escape !== ESCAPE_DIRECTIONS.both) {
+            let len = afterArr.length;
+            while (len--) {
             
-            // skip invalid ones
-            if (typeof afterArr[len] !== 'function') continue;
+                // skip invalid ones
+                if (typeof afterArr[len] !== 'function') continue;
             
-            const result = afterArr[len].call(_request, err, res);
+                const result = afterArr[len].call(_request, err, res);
             
-            // 拦截器显式返回一个false, 则中止请求。
-            if (typeof result !== 'undefined' && !result) {
-                reject(err || res);
-                // stop the hook calling too
-                return;
+                // 拦截器显式返回一个false, 则中止请求。
+                if (typeof result !== 'undefined' && !result) {
+                    reject(err || res);
+                    // stop the hook calling too
+                    return;
+                }
+            
             }
-            
         }
-    
+        
         err ? reject(err) : resolve(res);
     }
 }
@@ -165,7 +177,7 @@ export default class Model {
                 return new Promise(function (resolve, reject) {
                     
                     const _request = api[key].apply(model, args);
-    
+                    
                     // abort previous call to api[key]
                     if (_request._singleton && model._singletonRequests[key]) {
                         // The abort call will only abort the request, not the Promise wrapping it.
@@ -180,9 +192,9 @@ export default class Model {
                     if (!/^((https?:)?\/\/)/.test(_request.url)) {
                         _request.url = model._base + _request.url;
                     }
-    
+                    
                     beforeHook(_request, beforeEach, Model.beforeEach).then(() => {
-                     
+                        
                         // remember singleton request
                         if (_request._singleton) {
                             model._singletonRequests[key] = _request;
