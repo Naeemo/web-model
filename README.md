@@ -1,102 +1,158 @@
-# web-model
-Model layer in front end's mv* pattern.
 
-## description 简介
+# web-model 
 
-As front end run independently more often, a model wrapper for backend's api service seems necessary.
-It should be easy to use, and features like interceptor, multi sources, cache will be supported. Worker will be 
-used. Now it rely on [superagent](https://github.com/visionmedia/superagent) as ajax tool.
+API layer for the web, organize your api requests nicely.
 
-前端项目独立出来之后，需要一层对后台API服务封装。
-这个model层应该方便应用，支持拦截器、多数据源、缓存。合理应用web Worker。使用superagent作为ajax工具库。
+## Description
 
-## Guide
+Instead of repeating api requests everywhere in your SPA, a maintainable model layer for backend's api service seems more reasonable. 
+Web-model has many useful features: request/response guards, request caching(web storage), singleton request, and more to come.
+Web-model rely [superagent](https://github.com/visionmedia/superagent) as ajax tool.
 
-1. The request chain:
+## Request lifecycle chain:
 
-    ``` 
-    request -> Model.beforeEach -> instance.beforeEach -> (requesting) -> response -> Model.afterEach -> instance.afterEach -> handler 
-    ```
+``` 
+request -> Model.beforeEach -> instance.beforeEach -> (requesting) -> response -> Model.afterEach -> instance.afterEach -> handler 
+```
 
+## API
 
-2. Model.use() takes a config object:
+### 1. Superagent API
+
+check [superagent's docs](http://visionmedia.github.io/superagent/) first.
+
+### 2. Static methods
+
+```ecmascript 6
+import Model from 'web-model'
+
+Model.use({
+
+    // url prefix
+    base: String,
+    
+    // public request guard
+    beforeEach(next) {
+        /**
+         *  1. this bind to current request object
+         *  2. call next(falsy), break the request:
+         *  3. call next() or next(truthy), continue the request:
+         */
+    },
+    
+    // public response guard
+    afterEach(err, res) {
+        /**
+         *  1. this bind to current request object
+         *  2. (err, res) come from superagent's repsonse
+         */
+    }
+    
+})
+```
+
+### 3. Constructor
+
+```ecmascript 6
+// inside xxxModel.js
+import Model from 'web-model'
+
+export default new Model({
+
+    // instance specific url prefix, override public url prefix
+    base: String,
+    
+    // instance specific request guard
+    beforeEach(next) {
+        /**
+         *  1. this bind to current request object
+         *  2. call next(falsy), break the request:
+         *  3. call next() or next(truthy), continue the request:
+         */
+    },
+    
+    // instance specific response guard
+    afterEach(err, res) {
+        /**
+         *  1. this bind to current request object
+         *  2. (err, res) come from superagent's response
+         */
+    },
+    
+    // request method examples
+    api: {
         
-    ```
-        Model.use({
-        
-            // prefix for ajax's url
-            base: 'https://your-cool-app.com/api/4',
-        
-            // public interceptor for every request, before the request
-            beforeEach(next) {
-                /**
-                 *  1. this bind to current request object
-                 *  2. call next(falsy), break the request:
-                 *  3. call next() or next(truthy), continue the request:
-                 */
-            },
-            
-            // after request, for response
-            afterEach(err, res) {
-                /**
-                 *  1. this bind to current request object
-                 *  2. (err, res) come from superagent's repsonse
-                 */
+        /**
+         * @return {Promise}
+         */
+        xxxRequest() {
+            /**
+             *  1. this.request is a modified superagent
+             */
+        }
+   
+    }
+    
+})
+```
+
+### 3. extra request methods than superagent
+
+1. __escape(direction)__ escape guards manually.
+
+    - _direction_
+        - 'both', default value, escape both request and response guards.
+        - 'before', escape request guards.
+        - 'after', escape response guards.
+    
+    ```ecmascript 6
+    // Example: userModel.js
+    export default new Model({
+        api: {
+            login(user) {
+                this.request
+                    .post('/login')
+                    .send(user)
+                    .escape()   // escape('both') or escape('before') or escape('after')
             }
-        
-        });
+        }
+    })
     ```
 
-3. Model constructor: take the description of a restful resource, generate a instance with request methods attached.
-        
-    ``` ecmascript 6
-        let good = new Model({
-        
-            // will override Model.base
-            base: 'https://my-cool-app.com/api/v1/good',   
-            
-            // instance specific request interceptor, for every request on good
-            beforeEach(next) {
-                // same rules as Model.beforeEach
-            },
-            
-            // instance specific response interceptor
-            afterEach() {
-                // same rules as Model.afterEach
-            },
-            
-            api: {
-            
-                getMetaInfo() {
-                    return this.request
-                        .get('/meta-info')
-                        .escape()   // escape all interceptors manually.
-                }
-            
-                getById(id) {
-                    return this.request
-                        .get('/' + id)      // will be prefixed with base url
-                        .cache(30, true)    // 30 minutes' cache in sessionStorage
-                        // .cache(30)       // 30 minutes' cache in localStorage
-                },
-                
-                remove(id) {
-                    // won't be prefixed by base
-                    return this.request
-                        .del('http://another-cool-app.com/api/2/' + id) 
-                },
-                
-                complicatedQuery(query) {
-                    return this.request
-                        .get('/query')
-                        .singleton()    // only one request can be in process at the same time
-                        .query(query)
-                },
-                
+2. __cache(minutes, useSessionStorage)__ cache a _GET_ or _HEAD_ request
+
+    - _minutes_ cache valid duration in minutes.
+    - _useSessionStorage_ truthy for sessionStorage/falsy for localStorage.
+    
+    ```ecmascript 6
+    // Example: userModel.js
+    export default new Model({
+        api: {
+            getUser(id) {
+                return this.request
+                    .get('/' + id)      
+                    .cache(30, true)    // 30 minutes' cache in sessionStorage
+                    // .cache(30)       // 30 minutes' cache in localStorage
             }
-        });
-        
-        good.getById(666).then(res => {}, err => {});
-        good.remove(666).then(res => {}, err => {});
-        
-    ``` 
+        }
+    })
+    ```
+
+3. __singleton()__ mark a request as singleton
+
+    > this means only one request can be in process at the same time, 
+    previous request will be aborted.
+
+    ```ecmascript 6
+    // Example: userModel.js
+    export default new Model({
+        api: {
+           superComplicatedQuery(id, query) {
+               return this.request
+                   .get(`/user/${id}/report`)
+                   .singleton()
+                   .query(query)
+               }
+        }
+    })
+    ```
