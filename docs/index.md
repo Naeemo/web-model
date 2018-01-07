@@ -3,13 +3,12 @@ Instead of repeating api requests everywhere in your SPA, a maintainable model l
 Web-model has many useful features: request/response guards, request caching(web storage), singleton request, and more to come.
 Web-model rely [superagent](https://github.com/visionmedia/superagent) as ajax tool.
 
-> Request lifecycle chain:
-
-``` 
-request -> Model.beforeEach -> instance.beforeEach
--> (requesting) -> 
-response -> Model.afterEach -> instance.afterEach -> handler 
-```
+> Request lifecycle: 
+    ``` 
+    request -> Model.beforeEach -> instance.beforeEach
+    -> (requesting) -> 
+    response -> Model.afterEach -> instance.afterEach -> handler 
+    ```
 
 ## API
 
