@@ -12,7 +12,9 @@ Web-model rely [superagent](https://github.com/visionmedia/superagent) as ajax t
 ## Request lifecycle chain:
 
 ``` 
-request -> Model.beforeEach -> instance.beforeEach -> (requesting) -> response -> Model.afterEach -> instance.afterEach -> handler 
+request -> Model.beforeEach -> instance.beforeEach
+-> (requesting) -> 
+response -> Model.afterEach -> instance.afterEach -> handler 
 ```
 
 ## API
@@ -23,7 +25,7 @@ check [superagent's docs](http://visionmedia.github.io/superagent/) first.
 
 ### 2. Static methods
 
-```ecmascript 6
+```
 import Model from 'web-model'
 
 Model.use({
@@ -53,7 +55,7 @@ Model.use({
 
 ### 3. Constructor
 
-```ecmascript 6
+```
 // inside xxxModel.js
 import Model from 'web-model'
 
@@ -105,7 +107,7 @@ export default new Model({
         - 'before', escape request guards.
         - 'after', escape response guards.
     
-    ```ecmascript 6
+    ```
     // Example: userModel.js
     export default new Model({
         api: {
@@ -124,7 +126,7 @@ export default new Model({
     - _minutes_ cache valid duration in minutes.
     - _useSessionStorage_ truthy for sessionStorage/falsy for localStorage.
     
-    ```ecmascript 6
+    ```
     // Example: userModel.js
     export default new Model({
         api: {
@@ -143,7 +145,7 @@ export default new Model({
     > this means only one request can be in process at the same time, 
     previous request will be aborted.
 
-    ```ecmascript 6
+    ```
     // Example: userModel.js
     export default new Model({
         api: {
