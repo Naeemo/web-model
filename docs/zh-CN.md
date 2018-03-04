@@ -1,18 +1,18 @@
-[中文](https://naeemo.github.io/web-model/zh-CN.html) | [English](https://naeemo.github.io/web-model/)
+[English](https://naeemo.github.io/web-model/) | [中文](https://naeemo.github.io/web-model/zh-CN.html) 
 
-Instead of repeating api requests everywhere in your SPA, a maintainable model layer for backend's api service seems more reasonable. 
-Web-model has many useful features: request/response guards, request caching(web storage), singleton request, and more to come.
-Web-model rely [superagent](https://github.com/visionmedia/superagent) as ajax tool.
+在前后端分离的单页应用中，对服务端的数据请求无处不在，Web-model把这些请求整理为统一管理的数据层。
+基于统一的数据层，它实现了许多常用的功能：请求/返回 拦截器，请求缓存（基于web storage），单实例请求。
+Web-model 使用 superagent 作为 ajax 工具。
 
-> Request lifecycle: 
+> 一次请求的生命周期: 
     ``` 
     request -> Model.beforeEach -> instance.beforeEach
     -> (requesting) -> 
     response -> Model.afterEach -> instance.afterEach -> handler 
     ```
 
-## Example
-Suppose we have a Restful API resource: 'https://www.xxxx.com/apple', organize all related requests inside one `appleModel.js` with Web-model:
+## 例子
+假设有一个 Restful API 规范的资源：'https://www.xxxx.com/apple'，把这个资源相关的所有请求用 Web-model 统一管理，放在一个名为 `appleModel.js` 的文件里：
 ```javascript
 import Model from 'web-model';
 export default new Model({
@@ -36,15 +36,14 @@ export default new Model({
     }
 })
 ```
-then use the model instance wherever an apple-resource request needed:
+业务代码中：
 ```javascript
 import appleModel from './path/to/appleModel.js'
 // ...
 appleModel.getApples().then(({body: {apples}}) => {
     console.log('all my apples are here: ', apples);
 })
-// etc.
-````
+```
 
 ## API
 
