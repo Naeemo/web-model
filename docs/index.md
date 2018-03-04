@@ -127,7 +127,7 @@ export default new Model({
 })
 ```
 
-### 3. extra request methods than superagent
+### 3. methods attached to superagent
 
 1. __escape(direction)__ escape guards manually.
 

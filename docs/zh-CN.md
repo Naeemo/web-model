@@ -51,65 +51,65 @@ appleModel.getApples().then(({body: {apples}}) => {
 
 check [superagent's docs](http://visionmedia.github.io/superagent/) first.
 
-### 2. Static methods
+### 2. Model的静态方法
 
 ```
 import Model from 'web-model'
 
 Model.use({
 
-    // url prefix
+    // 全局的 url 前缀
     base: String,
     
-    // public request guard
+    // 全局的前置拦截
     beforeEach(next) {
         /**
-         *  1. this bind to current request object
-         *  2. call next(falsy), break the request:
-         *  3. call next() or next(truthy), continue the request:
+         *  1. this 指向 superagent request 实例
+         *  2. next(falsy) 终止请求
+         *  3. next() 或者 next(truthy)，请求继续
          */
     },
     
-    // public response guard
+    // 全局的后置拦截
     afterEach(err, res) {
         /**
-         *  1. this bind to current request object
-         *  2. (err, res) come from superagent's repsonse
+         *  1. this 指向 superagent request 实例
+         *  2. (err, res) 来自 superagent 的相应 (err, res)
          */
     }
     
 })
 ```
 
-### 3. Constructor
+### 3. Model 构造器
 
 ```
-// inside xxxModel.js
+// xxxModel.js 文件里面:
 import Model from 'web-model'
 
 export default new Model({
 
-    // instance specific url prefix, override public url prefix
+    // xxxModel 实例专属的 url 前缀，如果存在，将优先使用；不存在则使用全局的url前缀
     base: String,
     
-    // instance specific request guard
+    // 实例专属的前置拦截器
     beforeEach(next) {
         /**
-         *  1. this bind to current request object
-         *  2. call next(falsy), break the request:
-         *  3. call next() or next(truthy), continue the request:
+         *  1. this 指向 superagent request 实例
+         *  2. next(falsy) 终止请求
+         *  3. next() 或者 next(truthy)，请求继续
          */
     },
     
-    // instance specific response guard
+    // 实例专属的后置拦截器
     afterEach(err, res) {
         /**
-         *  1. this bind to current request object
-         *  2. (err, res) come from superagent's response
-         */
+          *  1. this 指向 superagent request 实例
+          *  2. (err, res) 来自 superagent 的相应 (err, res)
+          */
     },
     
-    // request method examples
+    // 请求方法例子
     api: {
         
         /**
@@ -117,7 +117,7 @@ export default new Model({
          */
         xxxRequest() {
             /**
-             *  1. this.request is a modified superagent
+             *  1. this.request 是修改过的 superagent 对象
              */
         }
    
@@ -126,14 +126,14 @@ export default new Model({
 })
 ```
 
-### 3. extra request methods than superagent
+### 3. superagent 对象上添加的方法
 
-1. __escape(direction)__ escape guards manually.
+1. __escape(direction)__ 选择性的跳过拦截器
 
     - _direction_
-        - 'both', default value, escape both request and response guards.
-        - 'before', escape request guards.
-        - 'after', escape response guards.
+        - 'both', 默认值，跳过前后拦截器
+        - 'before', 跳过前置拦截器
+        - 'after', 跳过后置拦截器
     
     ```
     // Example: userModel.js
@@ -149,10 +149,10 @@ export default new Model({
     })
     ```
 
-2. __cache(minutes, useSessionStorage)__ cache a _GET_ or _HEAD_ request
+2. __cache(minutes, useSessionStorage)__ 缓存一个 GET 或 HEAD 请求
 
-    - _minutes_ cache valid duration in minutes.
-    - _useSessionStorage_ truthy for sessionStorage/falsy for localStorage.
+    - _minutes_ 缓存有效时长，以分钟计
+    - _useSessionStorage_ 默认 false, true 则使用 sessionStorage，false 使用 localStorage
     
     ```
     // Example: userModel.js
@@ -168,10 +168,9 @@ export default new Model({
     })
     ```
 
-3. __singleton()__ mark a request as singleton
+3. __singleton()__ 将一个请求方法标记为单例
 
-    > this means only one request can be in process at the same time, 
-    previous request will be aborted.
+    > 这意味着当前页面同一时刻最多只能存在一个该请求，重复调用会自动将现有的请求中断。
 
     ```
     // Example: userModel.js
