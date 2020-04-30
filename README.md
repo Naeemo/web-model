@@ -15,8 +15,3 @@ ___
 
 
 Supported by [JetBrains open source program](https://www.jetbrains.com/community/opensource/#support?from=web-model).
-
-<a href="https://www.jetbrains.com/?from=web-model">
-  <img width="120px" alt="JetBrains Logo" src="https://www.jetbrains.com/company/press/#images-logos">
-</a>
-
