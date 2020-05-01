@@ -1,6 +1,6 @@
 {
   "name": "web-model",
-  "version": "0.3.10",
+  "version": "0.3.11",
   "description": "Model layer in front end's mv* pattern.",
   "main": "dist/model.js",
   "module": "src/Model.js",
@@ -23,6 +23,9 @@
     "url": "https://github.com/Naeemo/web-model/issues"
   },
   "homepage": "https://github.com/Naeemo/web-model#readme",
+  "dependencies": {
+    "superagent": "^3.8.3"
+  },
   "devDependencies": {
     "@babel/core": "^7.9.6",
     "@babel/plugin-proposal-class-properties": "^7.4.4",
@@ -36,7 +39,6 @@
     "rollup": "^2.7.5",
     "rollup-plugin-babel": "^4.3.2",
     "rollup-plugin-eslint": "^7.0.0",
-    "rollup-plugin-terser": "^5.1.0",
-    "superagent": "^3.8.3"
+    "rollup-plugin-terser": "^5.1.0"
   }
 }

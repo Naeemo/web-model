@@ -131,11 +131,7 @@ function afterHook(resolve, reject, ...afterArr) {
  * api
  *
  */
-export default class Model {
-
-    static base = "";
-    static beforeEach;
-    static afterEach;
+class Model {
 
     constructor(
         {
@@ -246,3 +242,9 @@ export default class Model {
     }
 
 }
+
+Model.base = "";
+Model.beforeEach = undefined;
+Model.afterEach = undefined;
+
+export default Model

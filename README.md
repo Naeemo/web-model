@@ -20,6 +20,29 @@ or
 npm i web-model
 ```
 
+Notice, if you are using babel(like babel-loader with webpack 4+), make sure to include `node_modules/web-model` in the compile process.
+
+Example for webpack 4+
+```JavaScript
+module.exports = {
+    // ...
+    module: {
+        rules: [
+            {
+                test: /\.js$/,
+                loader: 'babel-loader',
+                exclude: {
+                    test: /node_modules/,
+                    exclude: /web-model/
+                },
+                options: {}
+            }
+        ]
+    }
+    // ...
+}
+```
+
 ## Basic usage
 Define the model
 ```JavaScript
