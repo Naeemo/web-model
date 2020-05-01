@@ -4,6 +4,9 @@
 name: Node.js Package
 
 on:
+  push:
+    tags:
+      - 'v*'
   release:
     types: [created]
 
@@ -24,4 +27,4 @@ jobs:
         with:
           token: ${{ secrets.NPM_AUTH_TOKEN }}
 
-  
+
