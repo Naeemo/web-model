@@ -2,7 +2,7 @@
  * Created by naeemo on 2016/12/8.
  */
 
-import {SessionStorage, LocalStorage} from "./web-storage";
+import {get, remove, set} from "./storage";
 
 /**
  * form something like 'http://sdfsdf.com/api/sale.good__by__id.65_name.naeemo'
@@ -11,7 +11,7 @@ import {SessionStorage, LocalStorage} from "./web-storage";
  * @returns {string}
  * @private
  */
-function _formKey(url, query) {
+function buildKey(url, query) {
 
     const _url = url.replace(/^\/|\/$/, "");
     const queryStr = query.reduce((qStr, pair) => {
@@ -91,9 +91,9 @@ export default function (superAgent) {
 
                 // 2. set cache, the key has been formed in get process
                 if (request._expire.session) {
-                    SessionStorage.set(request._expire.key, cache);
+                    set(window.sessionStorage, request._expire.key, cache);
                 } else {
-                    LocalStorage.set(request._expire.key, cache);
+                    set(window.localStorage, request._expire.key, cache);
                 }
 
             }
@@ -109,20 +109,26 @@ export default function (superAgent) {
         if (CACHE_USED) {
 
             // cache step 1: form the KEY for caching.
-            request._expire.key = _formKey(request.url, request._query);
+            request._expire.key = buildKey(request.url, request._query);
 
             // cache step 3.1: get
-            let cache = request._expire.session
-                ? SessionStorage.get(request._expire.key)
-                : LocalStorage.get(request._expire.key);
+            let cache = get(
+                request._expire.session
+                    ? window.sessionStorage
+                    : window.localStorage,
+                request._expire.key
+            );
 
             // cache step 3.2: check expire
             if (cache && cache.expire > NOW) {
                 cb(null, cache.data);
             } else {
-                request._expire.session
-                    ? SessionStorage.remove(request._expire.key)
-                    : LocalStorage.remove(request._expire.key);
+                remove(
+                    request._expire.session
+                        ? window.sessionStorage
+                        : window.localStorage,
+                    request._expire.key
+                );
 
                 oldEnd.call(request, cb);
             }

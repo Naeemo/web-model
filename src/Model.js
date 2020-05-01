@@ -5,7 +5,7 @@
  */
 
 import originSuperAgent from "superagent/lib/client";
-import cache from "./cache/superagent-cache";
+import cache from "./cache";
 
 // which direction to escape
 const ESCAPE_DIRECTIONS = {
