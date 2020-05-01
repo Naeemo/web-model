@@ -3,6 +3,7 @@
   "version": "0.3.9",
   "description": "Model layer in front end's mv* pattern.",
   "main": "dist/model.js",
+  "module": "src/Model.js",
   "typings": "src/Model.js",
   "scripts": {
     "release": "cross-env NODE_ENV=production rollup -c",
