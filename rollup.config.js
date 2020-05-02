@@ -1,7 +1,7 @@
 /**
  * Created by naeemo on 2017/5/16.
  */
-import babel from "rollup-plugin-babel";
+import babel from "@rollup/plugin-babel";
 import {eslint} from "rollup-plugin-eslint";
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
@@ -23,6 +23,7 @@ export default {
         }),
         eslint(),
         babel({
+            babelHelpers: "bundled",
             exclude: "node_modules/**",
         }),
         commonjs(),
