@@ -12,8 +12,7 @@
   "scripts": {
     "prepublish": "yarn release",
     "release": "cross-env NODE_ENV=production rollup -c",
-    "dev": "cross-env NODE_ENV=devleopment rollup -c -w",
-    "test": "karma start --watch"
+    "dev": "cross-env NODE_ENV=devleopment rollup -c -w"
   },
   "repository": {
     "type": "git",
