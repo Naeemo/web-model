@@ -2,10 +2,15 @@
   "name": "web-model",
   "version": "0.3.12",
   "description": "Model layer in front end's mv* pattern.",
+  "files": [
+    "dist",
+    "src"
+  ],
   "main": "dist/model.js",
   "module": "src/Model.js",
-  "typings": "src/Model.js",
+  "types": "src/Model.js",
   "scripts": {
+    "prepublish": "yarn release",
     "release": "cross-env NODE_ENV=production rollup -c",
     "dev": "cross-env NODE_ENV=devleopment rollup -c -w",
     "test": "karma start --watch"
@@ -41,6 +46,7 @@
     "babel-eslint": "^10.0.1",
     "cross-env": "^7.0.2",
     "eslint": "^7.6.0",
+    "np": "^7.4.0",
     "rollup": "^2.23.1",
     "rollup-plugin-eslint": "^7.0.0",
     "rollup-plugin-terser": "^7.0.0"

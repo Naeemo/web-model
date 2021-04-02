@@ -1,0 +1,11 @@
+node_modules
+docs
+.babelrc
+.eslintignore
+.eslintrc
+.gitignore
+.node-version
+.yarnclean
+rollup.config.js
+yarn.lock
+yarn-error.log
