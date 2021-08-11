@@ -9,6 +9,9 @@
   "main": "dist/model.js",
   "module": "src/Model.js",
   "types": "src/Model.js",
+  "engines": {
+    "node": ">= 14"
+  },
   "scripts": {
     "prepublish": "yarn release",
     "release": "cross-env NODE_ENV=production rollup -c",
@@ -41,7 +44,6 @@
     "@rollup/plugin-babel": "^5.1.0",
     "@rollup/plugin-commonjs": "^15.0.0",
     "@rollup/plugin-node-resolve": "^9.0.0",
-    "@rollup/plugin-replace": "^2.3.1",
     "babel-eslint": "^10.0.1",
     "cross-env": "^7.0.2",
     "eslint": "^7.6.0",
