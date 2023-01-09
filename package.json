@@ -1,6 +1,6 @@
 {
   "name": "web-model",
-  "version": "0.3.15",
+  "version": "0.3.16",
   "description": "Model layer in front end's mv* pattern.",
   "files": [
     "dist",
